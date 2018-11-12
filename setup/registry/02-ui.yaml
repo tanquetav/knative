@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: site
+  labels:
+    k8s-app: site
+  namespace: kube-registry
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        k8s-app: site
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: site
+        env:
+        - name: ENV_DOCKER_REGISTRY_HOST
+          value: "192.168.122.15"
+        - name: ENV_DOCKER_REGISTRY_PORT
+          value: "30500"
+        - name: ENV_MODE_BROWSE_ONLY
+          value: "true"
+        image: konradkleine/docker-registry-frontend:v2
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: site
+  namespace: kube-registry
+  labels:
+    k8s-app: site
+spec:
+  type: NodePort
+  ports:
+  - name: registry-ui
+    port: 80
+    nodePort: 30501
+    protocol: TCP
+  selector:
+    k8s-app: site

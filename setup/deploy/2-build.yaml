@@ -1,0 +1,28 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: mybuild
+  namespace: default
+spec:
+  runLatest:
+    configuration:
+      build:
+        apiVersion: build.knative.dev/v1alpha1
+        kind: Build
+        spec:
+          serviceAccountName: build-bot
+          source:
+            git:
+              #url: git@192.168.122.15:30522:/git-server/repos/myrepo.git/
+              url: git@internal-server.kube-gitserver:/git-server/repos/myrepo.git/
+              revision: 1.0.0
+          template:
+            name: kaniko
+            arguments:
+            - name: IMAGE
+              value: 192.168.122.15:30500/myrepo/myrepo:1.0.0
+      revisionTemplate:
+        spec:
+          container:
+            image: 192.168.122.15:30500/myrepo/myrepo:1.0.0
+            imagePullPolicy: Always

@@ -1,0 +1,56 @@
+modprobe br_netfilter
+
+kubeadm init --pod-network-cidr=10.244.0.0/16 --cri-socket=/var/run/containerd/containerd.sock 
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+kubectl apply -f kube-flannel.yml
+
+
+
+cd ../dashboard
+kubectl apply -f .
+
+cd ../istio
+kubectl apply -f .
+
+kubectl label namespace default istio-injection=enabled
+
+cd ../knative-serving
+kubectl apply -f . 
+
+http://192.168.122.15:30216/
+
+cd ../kaniko
+kubectl apply -f . 
+
+
+cd ../registry
+kubectl apply -f .
+
+cd ../gitserver
+
+cd repos/myrepo.git
+
+git init --bare
+
+cd ../../
+
+kubectl apply -f .
+
+git clone ssh://git@192.168.122.15:30522/git-server/repos/myrepo.git/
+
+
+cd ../deploy
+kubectl apply -f .
+
+kubectl get pods -w
+
+while [ 1 ]; do  curl -H "Host: mybuild.default.svc.cluster.local" http://192.168.122.15:32380; echo ""; sleep 1; done
+
+kubectl get ksvc mybuild  --output yaml
+
+kubectl get svc knative-ingressgateway --namespace istio-system
+
+./test  -sleep 100 -prime 10000 -bloat 5 -qps 9999 -concurrency 300
+

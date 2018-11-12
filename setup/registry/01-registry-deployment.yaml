@@ -1,0 +1,53 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  namespace: kube-registry
+  name: kube-registry-v0
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: kube-registry
+        version: v0
+        kubernetes.io/cluster-service: "true"
+    spec:
+      containers:
+      - name: registry
+        image: registry:2.5.1
+        env:
+        - name: REGISTRY_HTTP_ADDR
+          value: :5000
+        volumeMounts:
+        - name: conf-store
+          mountPath: /etc/docker/registry/
+        ports:
+        - containerPort: 5000
+          name: registry
+          protocol: TCP
+      volumes:
+      - name: conf-store
+        hostPath:
+          path: /root/knative/setup/registry/registry-conf/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-registry
+  namespace: kube-registry
+  labels:
+    app: kube-registry
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    kubernetes.io/name: "KubeRegistry"
+spec:
+  selector:
+    app: kube-registry
+  type: NodePort
+  ports:
+  - name: registry
+    port: 5000
+    protocol: TCP
+    nodePort: 30500
+
