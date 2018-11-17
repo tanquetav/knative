@@ -1,0 +1,11 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Route
+metadata:
+  name: deploy
+  namespace: default
+spec:
+  traffic:
+    - revisionName: mybuild-00001
+      percent: 70
+    - revisionName: mybuild-00003
+      percent: 30

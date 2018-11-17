@@ -8,27 +8,27 @@ kubectl apply -f kube-flannel.yml
 
 
 
-cd ../dashboard
+cd ../02-dashboard
 kubectl apply -f .
 
-cd ../istio
+cd ../03-istio
 kubectl apply -f .
 
 kubectl label namespace default istio-injection=enabled
 
-cd ../knative-serving
+cd ../04-knative-serving
 kubectl apply -f . 
 
-http://192.168.122.15:30216/
+http://192.168.122.15:30002/
 
-cd ../kaniko
+cd ../05-kaniko
 kubectl apply -f . 
 
 
-cd ../registry
+cd ../06-registry
 kubectl apply -f .
 
-cd ../gitserver
+cd ../07-gitserver
 
 cd repos/myrepo.git
 
@@ -41,12 +41,13 @@ kubectl apply -f .
 git clone ssh://git@192.168.122.15:30522/git-server/repos/myrepo.git/
 
 
-cd ../deploy
+cd ../08-deploy
 kubectl apply -f .
 
 kubectl get pods -w
 
 while [ 1 ]; do  curl -H "Host: mybuild.default.svc.cluster.local" http://192.168.122.15:32380; echo ""; sleep 1; done
+
 
 kubectl get ksvc mybuild  --output yaml
 
@@ -54,3 +55,9 @@ kubectl get svc knative-ingressgateway --namespace istio-system
 
 ./test  -sleep 100 -prime 10000 -bloat 5 -qps 9999 -concurrency 300
 
+
+
+cd ../09-route
+kubectl apply -f .
+
+while [ 1 ]; do  curl -H "Host: deploy.default.svc.cluster.local" http://192.168.122.15:32380; echo ""; sleep 1; done
