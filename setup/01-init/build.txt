@@ -28,6 +28,8 @@ kubectl apply -f .
 cd ../06-registry
 kubectl apply -f .
 
+http://192.168.122.15:30501/home
+
 cd ../07-gitserver
 
 cd repos/myrepo.git
