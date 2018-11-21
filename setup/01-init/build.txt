@@ -2,6 +2,8 @@ modprobe br_netfilter
 
 kubeadm init --pod-network-cidr=10.244.0.0/16 --cri-socket=/var/run/containerd/containerd.sock 
 
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
 kubectl apply -f kube-flannel.yml

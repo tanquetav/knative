@@ -14,22 +14,22 @@ spec:
         kubernetes.io/cluster-service: "true"
     spec:
       containers:
-      - name: registry
-        image: registry:2.5.1
-        env:
-        - name: REGISTRY_HTTP_ADDR
-          value: :5000
-        volumeMounts:
-        - name: conf-store
-          mountPath: /etc/docker/registry/
-        ports:
-        - containerPort: 5000
-          name: registry
-          protocol: TCP
+        - name: registry
+          image: registry:2.5.1
+          env:
+            - name: REGISTRY_HTTP_ADDR
+              value: :5000
+          volumeMounts:
+            - name: conf-store
+              mountPath: /etc/docker/registry/
+          ports:
+            - containerPort: 5000
+              name: registry
+              protocol: TCP
       volumes:
-      - name: conf-store
-        hostPath:
-          path: /root/knative/setup/registry/registry-conf/
+        - name: conf-store
+          hostPath:
+            path: /root/knative/setup/06-registry/registry-conf/
 ---
 apiVersion: v1
 kind: Service
@@ -46,8 +46,7 @@ spec:
     app: kube-registry
   type: NodePort
   ports:
-  - name: registry
-    port: 5000
-    protocol: TCP
-    nodePort: 30500
-
+    - name: registry
+      port: 5000
+      protocol: TCP
+      nodePort: 30500

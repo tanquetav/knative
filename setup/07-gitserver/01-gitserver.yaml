@@ -14,24 +14,24 @@ spec:
         kubernetes.io/cluster-service: "true"
     spec:
       containers:
-      - name: gitserver
-        image: jkarlos/git-server-docker
-        volumeMounts:
-        - name: repos
-          mountPath: /git-server/repos
-        - name: keys
-          mountPath: /git-server/keys
-        ports:
-        - containerPort: 22
-          name: gitserver
-          protocol: TCP
+        - name: gitserver
+          image: jkarlos/git-server-docker
+          volumeMounts:
+            - name: repos
+              mountPath: /git-server/repos
+            - name: keys
+              mountPath: /git-server/keys
+          ports:
+            - containerPort: 22
+              name: gitserver
+              protocol: TCP
       volumes:
-      - name: repos
-        hostPath:
-          path: /root/knative/setup/gitserver/repos
-      - name: keys
-        hostPath:
-          path: /root/knative/setup/gitserver/keys
+        - name: repos
+          hostPath:
+            path: /root/knative/setup/07-gitserver/repos
+        - name: keys
+          hostPath:
+            path: /root/knative/setup/07-gitserver/keys
 ---
 apiVersion: v1
 kind: Service
@@ -45,10 +45,10 @@ spec:
     app: kube-gitserver
   type: NodePort
   ports:
-  - name: gitserver
-    port: 22
-    protocol: TCP
-    nodePort: 30522
+    - name: gitserver
+      port: 22
+      protocol: TCP
+      nodePort: 30522
 ---
 apiVersion: v1
 kind: Service
@@ -62,7 +62,6 @@ spec:
     app: kube-gitserver
   type: ClusterIP
   ports:
-  - name: gitserver
-    port: 22
-    protocol: TCP
-
+    - name: gitserver
+      port: 22
+      protocol: TCP
